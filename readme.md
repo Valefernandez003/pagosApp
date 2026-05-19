@@ -13,6 +13,7 @@ WhatsApp Payment Bot
   Extracción inteligente del monto del pago
   Alerta automática: “Comprobante recibido”
   Procesamiento en tiempo real
+  
 3 Cómo funciona
   El bot escucha mensajes de WhatsApp
   Detecta si el mensaje contiene palabras clave de pago o una imagen de comprobante
