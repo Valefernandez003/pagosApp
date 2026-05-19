@@ -1,0 +1,1 @@
+app hecha en node para registrar pagos de clientes por whatsapp de manera ordenada en una hoja de calculos mediante un disparador al ver que un mensaje contiene palabras claves, cuenta con una alerta de comprobante recibido 

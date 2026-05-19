@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+
+# environment variables
+.env
+
+# google credentials
+credentials.json
+
+# whatsapp session (LocalAuth)
+.wwebjs_auth/
+.wwebjs_cache/
+
+# logs
+logs/
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# editor files
+.vscode/
+.idea/
+
+#directories
+temp/
