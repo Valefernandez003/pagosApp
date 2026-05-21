@@ -5,8 +5,8 @@ node_modules/
 .env
 
 # google credentials
+src/config/*.json
 credentials.json
-
 # whatsapp session (LocalAuth)
 .wwebjs_auth/
 .wwebjs_cache/

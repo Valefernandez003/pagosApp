@@ -5,6 +5,7 @@ const formatDate = require("./utils/formatDate");
 const extractTextFromImage = require("./services/ocrService");
 const isReceipt = require("./utils/isReceipt");
 const client = require("./whatsapp/client");
+const extractAmountFromText = require("./utils/extractAmountFromText");
 
 client.on("message", async (message) => {
     try {
@@ -74,7 +75,7 @@ client.on("message", async (message) => {
                 numero: numeroNormalizado,
                 fecha,
                 mensaje: "Comprobante de pago",
-                monto: "revisar monto",
+                monto: monto || "revisar monto",
             });
 
             return;
@@ -105,7 +106,10 @@ client.on("message", async (message) => {
 
         const fecha = formatDate(message.timestamp);
 
-        const monto = extractAmountFromText(message.body.toLowerCase());;
+        const monto =
+            normalizeAmount(
+                message.body
+            );
 
         if (!monto) {
             console.log("No se pudo detectar monto");

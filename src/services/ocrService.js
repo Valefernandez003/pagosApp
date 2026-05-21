@@ -1,59 +1,105 @@
-const Tesseract = require("tesseract.js");
-const sharp = require("sharp");
+const vision =
+require("@google-cloud/vision");
+
+const extractAmountFromText =
+require("../utils/extractAmountFromText");
+
+const client =
+new vision.ImageAnnotatorClient();
 
 async function extractTextFromImage(media) {
+
     try {
-        if (!media?.data) return null;
 
-        const buffer = Buffer.from(media.data, "base64");
+        if (!media?.data) {
 
-        const processedBuffer = await sharp(buffer)
-            .resize({ width: 1600 })
-            .grayscale()
-            .normalize()
-            .toBuffer();
+            console.log(
+                "Media inválida"
+            );
 
-        const result = await Tesseract.recognize(
-            processedBuffer,
-            "spa+eng"
+            return null;
+        }
+
+        /*base64 -> buffer */
+
+        const buffer =
+            Buffer.from(
+                media.data,
+                "base64"
+            );
+
+        /*Google Vision OCR*/
+
+        const [result] =
+            await client
+                .documentTextDetection({
+
+                    image: {
+                        content: buffer
+                    }
+                });
+
+        /*texto detectado*/
+
+        const text =
+            result
+                ?.fullTextAnnotation
+                ?.text || "";
+
+        console.log(
+            "\nGOOGLE OCR TEXT:\n"
         );
 
-        const text = (result?.data?.text || "").toLowerCase();
+        console.log(text);
 
-        const isReceipt = detectReceipt(text);
+        /*detectar monto*/
+
+        let detectedAmount =
+            null;
+
+        try {
+
+            detectedAmount =
+                extractAmountFromText(
+                    text
+                );
+
+        } catch (amountError) {
+
+            console.log(
+                "\nERROR EXTRACTING AMOUNT:\n"
+            );
+
+            console.log(
+                amountError
+            );
+        }
+
+        console.log(
+            "\nDETECTED AMOUNT:",
+            detectedAmount
+        );
+
+        /*retorno final*/
 
         return {
+
             text,
-            isReceipt
+
+            detectedAmount
         };
 
     } catch (error) {
-        console.error("OCR ERROR:", error);
+
+        console.log(
+            "\nGOOGLE OCR ERROR:\n"
+        );
+
+        console.log(error);
+
         return null;
     }
 }
 
-function detectReceipt(text) {
-    const keywords = [
-        "comprobante",
-        "transferencia",
-        "mercado pago",
-        "pagado",
-        "envío de dinero",
-        "operación",
-        "cvu",
-        "cuil"
-    ];
-
-    let score = 0;
-
-    for (const k of keywords) {
-        if (text.includes(k)) {
-            score++;
-        }
-    }
-
-    return score >= 2;
-}
-
-module.exports = extractTextFromImage;
+module.exports =
+    extractTextFromImage;

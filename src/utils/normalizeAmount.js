@@ -1,54 +1,100 @@
 function normalizeAmount(text) {
-    text = text.toLowerCase();
 
-    const match = text.match(/-?\d+/);
-
-    if (!match) return null;
-    
-    let amount = parseInt(match[0]);
-    
-    if(amount <= 0){
+    if (!text) {
         return null;
     }
 
-    if(amount > 1000000){
+    text =
+        text.toLowerCase();
+
+    /*detectar números*/
+
+    const matches = text.match(
+        /\d+/g
+    );
+
+    if (!matches) {
+        return null;
+    }
+
+    /*tomar el mayor*/
+
+    let amount = Math.max(
+
+        ...matches.map(n =>
+            parseInt(n)
+        )
+    );
+
+    /* validaciones*/
+
+    if (
+        isNaN(amount) ||
+        amount <= 0 ||
+        amount > 1000000
+    ) {
         return null;
     }
 
     const palabrasMiles = [
+
         "mil",
+
         "lucas",
+
         "k"
     ];
 
+    /*palabras de pago*/
+
     const palabrasPago = [
+
         "transferi",
         "transferí",
+
         "pague",
         "pagué",
+
         "abone",
         "aboné",
+
         "mande",
         "mandé",
+
         "envie",
         "envié",
+
         "pase",
         "pasé",
-        "pago"
+
+        "pago",
+
+        "transferencia"
     ];
 
-    if (palabrasMiles.some(word => text.includes(word))) {
+    if (
+        palabrasMiles.some(word =>
+            text.includes(word)
+        )
+    ) {
+
         return amount * 1000;
     }
 
     if (
+
         amount < 1000 &&
-        palabrasPago.some(word => text.includes(word))
+
+        palabrasPago.some(word =>
+            text.includes(word)
+        )
     ) {
+
         return amount * 1000;
     }
 
     return amount;
 }
 
-module.exports = normalizeAmount;
+module.exports =
+    normalizeAmount;
