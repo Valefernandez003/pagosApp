@@ -6,20 +6,20 @@ WhatsApp Payment Bot
 
 1 Características
   Detección automática de mensajes de pago por palabras clave
-  Soporte de comprobantes en imagen (OCR con Tesseract)
+  Soporte de comprobantes en imagen (cloud vision API)
   Registro automático en Google Sheets
   Captura de nombre y número del cliente desde WhatsApp
   Formateo automático de fecha del mensaje
-  Extracción inteligente del monto del pago
-  Alerta automática: “Comprobante recibido”
+  Extracción inteligente del monto del pago mediante cloud vision
   Procesamiento en tiempo real
 
 2 Cómo funciona
   El bot escucha mensajes de WhatsApp
   Detecta si el mensaje contiene palabras clave de pago o una imagen de comprobante
 Si es imagen:
-  Aplica OCR para detectar si es un comprobante
-  avisa que se detectó un comprobante para evitar errores de carga automáticos
+  Aplica OCR(cloud vision API) para detectar si es un comprobante
+  busca el número que se encuentre mas cercano al simbolo $
+  y es el que elige para cargarlo, si no lo encuentra carga revisar monto
 Si es texto:
   Analiza el contenido y extrae el monto
   Guarda los datos en Google Sheets
@@ -28,7 +28,7 @@ Si es texto:
 3 Tecnologías usadas
   Node.js
   whatsapp-web.js
-  Tesseract.js (OCR)
+  cloud vision API (OCR)
   Sharp (procesamiento de imágenes)
   Google Sheets API
   JavaScript (ES6+)
