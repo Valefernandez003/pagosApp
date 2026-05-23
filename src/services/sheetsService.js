@@ -2,7 +2,7 @@ const { google } = require("googleapis");
 require("dotenv").config();
 
 const auth = new google.auth.GoogleAuth({
-    keyFile: "credentials.json",
+    keyFile: process.env.GOOGLE_SHEETS_CREDENTIALS,
     scopes: ["https://www.googleapis.com/auth/spreadsheets"]
 });
 

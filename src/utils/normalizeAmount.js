@@ -6,11 +6,15 @@ function normalizeAmount(text) {
 
     text =
         text.toLowerCase();
+    
+    if (text.includes("?")) {
+        return false;
+    }
 
     /*detectar números*/
 
     const matches = text.match(
-        /\d+/g
+    /\d[\d.,]*/g
     );
 
     if (!matches) {
@@ -21,9 +25,15 @@ function normalizeAmount(text) {
 
     let amount = Math.max(
 
-        ...matches.map(n =>
-            parseInt(n)
-        )
+    ...matches.map(n => {
+
+            return parseInt(
+
+                n
+                    .split(",")[0]
+                    .replace(/\./g, "")
+            );
+        })
     );
 
     /* validaciones*/

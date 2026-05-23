@@ -4,11 +4,11 @@ function normalizeNumber(str) {
 
         String(str)
 
+            .split(",")[0]
+
             .replace(/\$/g, "")
 
             .replace(/\./g, "")
-
-            .replace(/,/g, "")
 
             .replace(/\s/g, "")
     );

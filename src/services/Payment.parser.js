@@ -7,6 +7,28 @@ function isPaymentMessage(text) {
     text =
         text.toLowerCase();
 
+        const blacklist = [
+
+            "mañana",
+
+            "despues",
+            "después",
+
+            "queres",
+            "querés",
+
+            "puedo",
+
+            "podria",
+            "podría",
+
+            "si te",
+
+            "te parece",
+
+            "capaz"
+        ];
+
     const keywords = [
 
         "pague",
@@ -45,10 +67,10 @@ function isPaymentMessage(text) {
         "te pasé",
     ];
 
-    return keywords.some(word =>
-
-        text.includes(word)
-    );
+    if (blacklist.some(word => text.includes(word))){
+        return false;
+    }
+    return keywords.some(word =>text.includes(word));
 }
 
 module.exports =
