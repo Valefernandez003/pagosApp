@@ -1,77 +1,85 @@
 function isPaymentMessage(text) {
-
-    if (!text) {
+    if (!text || typeof text !== "string") {
         return false;
     }
 
-    text =
-        text.toLowerCase();
+    text = text.toLowerCase();
 
-        const blacklist = [
-
-            "mañana",
-
-            "despues",
-            "después",
-
-            "queres",
-            "querés",
-
-            "puedo",
-
-            "podria",
-            "podría",
-
-            "si te",
-
-            "te parece",
-
-            "capaz"
-        ];
-
-    const keywords = [
-
-        "pague",
-        "pagué",
-
-        "pago",
-
-        "transferi",
-        "transferí",
-        "transfiero",
-
-        "abone",
-        "aboné",
-        "abono",
-
-        "pase",
-        "pasé",
-        "paso",
-
-        "mande",
-        "mandé",
-        "mando",
-
-        "deposite",
-        "deposité",
-        "deposito",
-
-        "envie",
-        "envié",
-        "envio",
-        "envío",
-        "te hice la transferencia",
-        "ya transferí",
-        "ya te mandé",
-        "te envié",
-        "te pasé",
+    const negativePatterns = [
+        "no pag",
+        "no te pag",
+        "no he pag",
+        "todavía no pag",
+        "todavia no pag",
+        "aún no pag",
+        "aun no pag",
+        "me olvidé de pagar",
+        "me olvide de pagar",
+        "no hice el pago",
+        "no transferi",
+        "no transferí",
+        "no te transferi",
+        "no te transferí"
     ];
 
-    if (blacklist.some(word => text.includes(word))){
+    if (negativePatterns.some(p => text.includes(p))) {
         return false;
     }
-    return keywords.some(word =>text.includes(word));
+
+    const blacklist = [
+        "mañana",
+        "despues",
+        "después",
+        "queres",
+        "querés",
+        "puedo",
+        "podria",
+        "podría",
+        "si te",
+        "te parece",
+        "capaz",
+        "consulto",
+        "consulta"
+    ];
+
+    if (blacklist.some(word => text.includes(word))) {
+        return false;
+    }
+
+    const strongKeywords = [
+        "te hice la transferencia",
+        "ya transferí",
+        "ya transferi",
+        "te envié comprobante",
+        "te envie comprobante",
+        "te mandé comprobante",
+        "te mande comprobante",
+        "transferencia realizada",
+        "ya te pagué",
+        "ya te pague",
+        "te acabo de transferir"
+    ];
+
+    const weakKeywords = [
+        "pagué",
+        "pague",
+        "pago",
+        "transferí",
+        "transferi",
+        "deposité",
+        "deposite",
+        "envíe",
+        "envie",
+        "mandé",
+        "mande",
+        "abone",
+        "aboné"
+    ];
+
+    const hasStrong = strongKeywords.some(w => text.includes(w));
+    const hasWeak = weakKeywords.some(w => text.includes(w));
+
+    return hasStrong || hasWeak;
 }
 
-module.exports =
-    isPaymentMessage;
+module.exports = isPaymentMessage;
