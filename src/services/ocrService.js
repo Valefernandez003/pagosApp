@@ -46,12 +46,6 @@ async function extractTextFromImage(media) {
                 ?.fullTextAnnotation
                 ?.text || "";
 
-        console.log(
-            "\nGOOGLE OCR TEXT:\n"
-        );
-
-        console.log(text);
-
         /*detectar monto*/
 
         let detectedAmount =
@@ -75,10 +69,6 @@ async function extractTextFromImage(media) {
             );
         }
 
-        console.log(
-            "\nDETECTED AMOUNT:",
-            detectedAmount
-        );
 
         /*retorno final*/
 

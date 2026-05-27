@@ -18,24 +18,30 @@ new Client({
 
             "--no-sandbox",
 
-            "--disable-setuid-sandbox"
+            "--disable-setuid-sandbox",
+
+            "--disable-dev-shm-usage"
         ]
     }
 });
 
 client.on("qr", (qr) => {
 
-    qrcode.generate(
-        qr,
-        { small: true }
-    );
+    console.log("ESCANEA QR");
+
+    qrcode.generate(qr, {
+        small: true
+    });
+});
+
+client.on("authenticated", () => {
+
+    console.log("AUTH OK");
 });
 
 client.on("ready", () => {
 
-    console.log(
-        "WhatsApp conectado"
-    );
+    console.log("WHATSAPP CONECTADO");
 });
 
 module.exports = client;
