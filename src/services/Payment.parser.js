@@ -39,7 +39,9 @@ function isPaymentMessage(text) {
         "te parece",
         "capaz",
         "consulto",
-        "consulta"
+        "consulta",
+        "foto",
+        "fotos",
     ];
 
     if (blacklist.some(word => text.includes(word))) {
@@ -50,14 +52,40 @@ function isPaymentMessage(text) {
         "te hice la transferencia",
         "ya transferí",
         "ya transferi",
+        "te transferi",
+        "te transferí",
+        "ya te transferi",
+        "ya te transferí",
+        "te deposite",
+        "te deposité",
+        "ya te deposite",
+        "ya te deposité",
         "te envié comprobante",
         "te envie comprobante",
         "te mandé comprobante",
         "te mande comprobante",
         "transferencia realizada",
+        "te acabo de transferir",
         "ya te pagué",
         "ya te pague",
-        "te acabo de transferir"
+        "te pasé",
+        "te pase",
+        "te mande",
+        "te mandé",
+        "ahi te mande",
+        "ahí te mande",
+        "ahi te mandé",
+        "ahí te mandé",
+        "ya te mande",
+        "ya te mandé",
+        "te envie",
+        "te envié",
+        "ya te envie",
+        "ya te envié",
+        "ahí te envié",
+        "ahi te envie",
+        "ahí te envie",
+        "ahi te envié",
     ];
 
     const weakKeywords = [
@@ -68,18 +96,19 @@ function isPaymentMessage(text) {
         "transferi",
         "deposité",
         "deposite",
-        "envíe",
-        "envie",
-        "mandé",
-        "mande",
         "abone",
         "aboné"
     ];
 
     const hasStrong = strongKeywords.some(w => text.includes(w));
     const hasWeak = weakKeywords.some(w => text.includes(w));
+    const hasAmount =
+    /\d+/.test(text);
 
-    return hasStrong || hasWeak;
+    return (
+        (hasStrong && hasAmount) ||
+        (hasWeak && hasAmount)
+    );
 }
 
 module.exports = isPaymentMessage;

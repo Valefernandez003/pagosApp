@@ -33,9 +33,11 @@ function extractAmountFromText(text) {
 
     if (moneyMatches?.length) {
 
-        return normalizeNumber(
-            moneyMatches[0]
-        );
+        const amounts = moneyMatches.map(normalizeNumber).filter(n => n > 0);
+
+        if (amounts.length) {
+            return Math.max(...amounts);
+        }
     }
 
     /*fallback inteligente*/
