@@ -119,6 +119,19 @@ async function handleTextPayment(message) {
         mensaje: message.body,
         monto,
     });
+    
+    usersWithRecentReceipt.set(
+            numeroNormalizado,
+            Date.now()
+        );
+    
+        setTimeout(() => {
+    
+            usersWithRecentReceipt.delete(
+                numeroNormalizado
+            );
+    
+        }, 1000 * 60 * 3);
 }
 
 module.exports =
