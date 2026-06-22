@@ -28,6 +28,19 @@ client.on("message", async (message) => {
 
         if (message.hasMedia) {
 
+            console.log(
+                "Media recibida:",
+                message.type
+            );
+
+            if (
+                message.type !== "image" &&
+                message.type !== "document"
+            ) {
+
+                return;
+            }
+
             await handleReceiptMessage(
                 message
             );
