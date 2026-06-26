@@ -159,20 +159,24 @@ async function handleReceiptMessage(message) {
         formatDate(
             message.timestamp
         );
-
-    await savePayment({
-        messageId: message.id.id,
-        nombre,
-        numero: numeroNormalizado,
-        fecha,
-        mensaje: "Comprobante de pago",
-        monto,
-    });
-
+        if (usersWithRecentReceipt.has(numeroNormalizado)) {
+            return;
+        }
+        
     usersWithRecentReceipt.set(
         numeroNormalizado,
         Date.now()
     );
+
+        await savePayment({
+            messageId: message.id.id,
+            nombre,
+            numero: numeroNormalizado,
+            fecha,
+            mensaje: "Comprobante de pago",
+            monto,
+        });
+        
 
     setTimeout(() => {
 
