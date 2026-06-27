@@ -105,12 +105,18 @@ async function handleReceiptMessage(message) {
         return;
     }
 
+    if (
+        monto === false
+    ) {
+        monto = "REVISAR";
+    }
+
     const montoNumerico =
         Number(monto);
 
     if (
         !isNaN(montoNumerico) &&
-        montoNumerico >= 400000
+        (montoNumerico >= 400000 || montoNumerico === 2202)
     ) {
 
         monto = "REVISAR";
