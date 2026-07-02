@@ -7,8 +7,8 @@ function normalizeAmount(text) {
     text =
         text.toLowerCase();
     
-    if (text.includes("?")) {
-        return false;
+    if (!matches) {
+        return null;
     }
 
     /*detectar números*/

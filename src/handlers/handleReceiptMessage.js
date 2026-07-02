@@ -116,7 +116,7 @@ async function handleReceiptMessage(message) {
 
     if (
         !isNaN(montoNumerico) &&
-        (montoNumerico >= 400000 || montoNumerico === 2202)
+        (montoNumerico >= 400000 || montoNumerico === 2202 || montoNumerico < 100)
     ) {
 
         monto = "REVISAR";
