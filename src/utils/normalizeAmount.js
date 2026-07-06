@@ -3,6 +3,10 @@ function normalizeAmount(text) {
     if (!text) {
         return null;
     }
+    
+        const matches = text.match(
+        /\d+(?:[.,]\d+)?\s*k?|\d[\d.,]*/g
+        );
 
     text =
         text.toLowerCase();
@@ -12,10 +16,6 @@ function normalizeAmount(text) {
     }
 
     /*detectar números*/
-
-    const matches = text.match(
-    /\d+(?:[.,]\d+)?\s*k?|\d[\d.,]*/g
-    );
 
     if (!matches) {
         return null;
