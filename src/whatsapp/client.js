@@ -44,4 +44,20 @@ client.on("ready", () => {
     console.log("WHATSAPP CONECTADO");
 });
 
+client.on("disconnected", (reason) => {
+
+    console.log("WHATSAPP DESCONECTADO: ", reason);
+    process.exit(1);
+});
+
+setTimeout(() => {
+
+    if (!client.info) {
+
+        console.log("WHATSAPP NO INICIALIZÓ. REINICIANDO...");
+        process.exit(1);
+    }
+
+}, 5 * 60 * 1000);
+
 module.exports = client;
