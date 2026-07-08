@@ -10,8 +10,8 @@ const handleReceiptMessage =
 const handleTextPayment =
     require("./handlers/handleTextPayment");
 
-    cron.schedule("0 3 * * *", async () => {
-    console.log("⏰ Iniciando reinicio diario programado para liberar memoria...");
+    cron.schedule("0 6 * * *", async () => {
+    console.log(" Iniciando reinicio diario programado para liberar memoria...");
     try {
         if (client) {
             await client.destroy(); 
