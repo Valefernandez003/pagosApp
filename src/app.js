@@ -1,5 +1,7 @@
 require("dotenv").config();
 
+const cron = require("node-cron");
+
 const client = require("./whatsapp/client");
 
 const handleReceiptMessage =
@@ -7,6 +9,21 @@ const handleReceiptMessage =
 
 const handleTextPayment =
     require("./handlers/handleTextPayment");
+
+    cron.schedule("0 3 * * *", async () => {
+    console.log("⏰ Iniciando reinicio diario programado para liberar memoria...");
+    try {
+        if (client) {
+            await client.destroy(); 
+            console.log("Cliente de WhatsApp destruido.");
+        }
+    } catch (error) {
+        console.error("Error al destruir el cliente de WhatsApp durante el reinicio:", error);
+    } finally {
+        console.log("Apagando el proceso de Node.js. PM2 lo reiniciará ahora.");
+        process.exit(0); 
+    }
+});
 
 client.on("message", async (message) => {
 
