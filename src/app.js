@@ -26,9 +26,9 @@ const handleTextPayment =
 });
 
 client.on("message", async (message) => {
-    console.log("MENSAJE RECIBIDO", message.type);
-
+    
     try {
+        console.log("MENSAJE RECIBIDO", message.type);
 
         const nowInSeconds =
             Math.floor(Date.now() / 1000);
