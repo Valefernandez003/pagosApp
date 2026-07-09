@@ -26,6 +26,7 @@ const handleTextPayment =
 });
 
 client.on("message", async (message) => {
+    console.log("MENSAJE RECIBIDO", message.type);
 
     try {
 
