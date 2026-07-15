@@ -23,20 +23,36 @@ async function handleReceiptMessage(message) {
 
     let media;
 
-    try {
+console.log("======================================");
+console.log("[DOWNLOAD] Iniciando descarga");
+console.log("[DOWNLOAD] ID:", message.id.id);
+console.log("[DOWNLOAD] Tipo:", message.type);
+console.log("[DOWNLOAD] HasMedia:", message.hasMedia);
+console.log("[DOWNLOAD] From:", message.from);
 
-        media =
-            await message.downloadMedia();
+try {
 
-        if (!media) {
-            return;
-        }
+    media = await message.downloadMedia();
 
-    } catch (err) {
-
-        console.log(err);
+    if (!media) {
+        console.log("[DOWNLOAD] downloadMedia devolvió null");
         return;
     }
+
+    console.log("[DOWNLOAD] Descarga exitosa");
+    console.log("[DOWNLOAD] MIME:", media.mimetype);
+    console.log("[DOWNLOAD] Filename:", media.filename);
+
+} catch (err) {
+
+    console.log("[DOWNLOAD] Error al descargar media");
+    console.log("Nombre:", err.name);
+    console.log("Mensaje:", err.message);
+    console.log("Stack:", err.stack);
+    console.log("Objeto completo:", err);
+
+    return;
+}
 
     const allowedTypes = [
         "image/jpeg",
@@ -58,14 +74,21 @@ async function handleReceiptMessage(message) {
 
     try {
 
+        console.log("[OCR] Iniciando OCR...");
+
         ocrResult =
-            await extractTextFromImage(
-                media
-            );
+            await extractTextFromImage(media);
+
+        console.log("[OCR] OCR finalizado");
+        console.log("[OCR] Monto detectado:", ocrResult?.detectedAmount);
+        console.log("[OCR] Texto extraído:", ocrResult?.text?.substring(0, 100));
 
     } catch (err) {
 
-        console.log(err);
+        console.log("[OCR] Error durante el OCR");
+        console.log("Nombre:", err.name);
+        console.log("Mensaje:", err.message);
+        console.log("Stack:", err.stack);
         return;
     }
 
@@ -174,6 +197,8 @@ async function handleReceiptMessage(message) {
         Date.now()
     );
 
+        console.log("[SHEETS] Guardando comprobante...");
+
         await savePayment({
             messageId: message.id.id,
             nombre,
@@ -183,6 +208,7 @@ async function handleReceiptMessage(message) {
             monto,
         });
         
+        console.log("[SHEETS] ✅ Comprobante guardado correctamente");
 
     setTimeout(() => {
 
