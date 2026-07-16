@@ -53,6 +53,10 @@ client.on("message", async (message) => {
             return;
         }
 
+        if (message.from === "status@broadcast") {
+            return;
+        }
+
         if (message.from.includes("@g.us")) {
             return;
         }
@@ -86,7 +90,7 @@ client.on("message", async (message) => {
     } catch (error) {
 
         console.error(
-            "❌ ERROR GENERAL:",
+            "ERROR GENERAL:",
             error
         );
     }
