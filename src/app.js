@@ -25,6 +25,20 @@ const handleTextPayment =
     }
 });
 
+    async function gracefulExit() {
+        try {
+            await client.destroy();
+            console.log("Cliente cerrado correctamente.");
+        } catch (e) {
+            console.error("Error cerrando cliente:", e);
+        } finally {
+            process.exit(0);
+        }
+    }
+
+    process.on("SIGINT", gracefulExit);
+    process.on("SIGTERM", gracefulExit);
+
 client.on("message", async (message) => {
     
     try {
