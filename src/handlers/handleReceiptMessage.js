@@ -31,6 +31,10 @@ console.log("[DOWNLOAD] HasMedia:", message.hasMedia);
 console.log("[DOWNLOAD] From:", message.from);
 
 try {
+    
+    if (message.from === "status@broadcast") {
+    return;
+    }
 
     media = await message.downloadMedia();
 

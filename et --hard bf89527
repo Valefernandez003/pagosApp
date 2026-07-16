@@ -1,0 +1,28 @@
+[33mc6733cf[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m arreglo
+[33m53ba78f[m arreglo de exports
+[33ma94e68f[m temporizador despues del reinicio
+[33mbf89527[m logs de prueba para ver si hay un error con media
+[33m8141841[m prueba eliminada
+[33md308ca9[m log temporal
+[33mba276c0[m arreglo
+[33md3362eb[m prueba
+[33m0895720[m cambio hora de reinicio
+[33m31ba5d2[m mejora en reinicio diario y en el watchdog para ver si inicia bien
+[33m2956942[m arreglo declaracion matches
+[33m4dfb694[m proteccion contra cuelgues
+[33m52d6d92[m correccion manejo de mensajes y medida de seguridad por si se detecta un numero muy bajo en un comprobante
+[33m25168dc[m corrección registro de montos raros
+[33mecac24c[m arreglo mensaje duplicados
+[33m5b8ddba[m arreglo procesamiento de media
+[33m67a7911[m paso a paso deploy en vm
+[33m9ac6525[m temporizador para mensajes de texto
+[33m939c882[m fix: mejorar detección de mensajes de pago, normalizar texto y reducir falsos positivos en filtros de intención, ya no revisa mensajes viejos, y se separo en componentes el app.js
+[33me643a2c[m eliminados console.logs y arreglado formato de la hora
+[33m840b8a1[m eliminado filtro de reenvío porque causaba conflicto y mejora en palabras de pago
+[33m3d6d580[m mejoras:
+[33mcdb1f87[m Update OCR technology references in README
+[33m4136045[m cambio tesseract OCR por cloud vision
+[33mfd82bbe[m fix readme
+[33mde75281[m version final readme
+[33m2576e1f[m mejora de readme
+[33m3f88b86[m app completa
