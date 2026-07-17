@@ -55,6 +55,18 @@ client.on("ready", async () => {
     }
 });
 
+client.on("message_create", msg => {
+    console.log("MESSAGE_CREATE:", msg.from);
+});
+
+client.on("message_ack", () => {
+    console.log("MESSAGE_ACK");
+});
+
+client.on("change_state", state => {
+    console.log("STATE:", state);
+});
+
 client.on("disconnected", async (reason) => {
 
     console.log("WHATSAPP DESCONECTADO: ", reason);
