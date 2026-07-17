@@ -50,6 +50,12 @@ client.on("ready", async () => {
     } catch (err) {
         console.error("No se pudo detectar la versión:", err);
     }
+    client.pupPage.on("console", (msg) => {
+        console.log("PAGE LOG:", msg.text());
+    });
+    client.pupPage.on("pageerror", (err) => {
+        console.error("PAGE ERROR:", err);
+    });
 });
 
 client.on("disconnected", async (reason) => {
