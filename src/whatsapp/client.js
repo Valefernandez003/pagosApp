@@ -45,17 +45,14 @@ client.on("ready", async () => {
     isReady = true;
     console.log("WHATSAPP CONECTADO");
     try {
+        console.log("Estado:", await client.getState());
+        const info = client.info;
+        console.log("Número:", info?.wid?._serialized);
         const version = await client.getWWebVersion();
         console.log("Versión de WhatsApp Web detectada:", version);
     } catch (err) {
         console.error("No se pudo detectar la versión:", err);
     }
-    client.pupPage.on("console", (msg) => {
-        console.log("PAGE LOG:", msg.text());
-    });
-    client.pupPage.on("pageerror", (err) => {
-        console.error("PAGE ERROR:", err);
-    });
 });
 
 client.on("disconnected", async (reason) => {
