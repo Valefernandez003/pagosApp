@@ -41,9 +41,15 @@ client.on("authenticated", () => {
     console.log("AUTH OK");
 });
 
-client.on("ready", () => {
+client.on("ready", async () => {
     isReady = true;
     console.log("WHATSAPP CONECTADO");
+    try {
+        const version = await client.getWWebVersion();
+        console.log("Versión de WhatsApp Web detectada:", version);
+    } catch (err) {
+        console.error("No se pudo detectar la versión:", err);
+    }
 });
 
 client.on("disconnected", async (reason) => {
