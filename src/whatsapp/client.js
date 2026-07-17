@@ -57,6 +57,13 @@ client.on("ready", async () => {
 
 client.on("message_create", msg => {
     console.log("MESSAGE_CREATE:", msg.from);
+    console.log({
+    from: msg.from,
+    fromMe: msg.fromMe,
+    type: msg.type,
+    body: msg.body,
+    hasMedia: msg.hasMedia
+});
 });
 
 client.on("message_ack", () => {
