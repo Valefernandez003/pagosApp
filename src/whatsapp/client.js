@@ -44,26 +44,6 @@ client.on("authenticated", () => {
 client.on("ready", async () => {
     isReady = true;
     console.log("WHATSAPP CONECTADO");
-    try {
-        console.log("Estado:", await client.getState());
-        const info = client.info;
-        console.log("Número:", info?.wid?._serialized);
-        const version = await client.getWWebVersion();
-        console.log("Versión de WhatsApp Web detectada:", version);
-    } catch (err) {
-        console.error("No se pudo detectar la versión:", err);
-    }
-});
-
-client.on("message_create", msg => {
-    console.log("MESSAGE_CREATE:", msg.from);
-    console.log({
-    from: msg.from,
-    fromMe: msg.fromMe,
-    type: msg.type,
-    body: msg.body,
-    hasMedia: msg.hasMedia
-});
 });
 
 client.on("message_ack", () => {
