@@ -8,8 +8,7 @@ node_modules/
 src/config/*.json
 credentials.json
 # whatsapp session (LocalAuth)
-.wwebjs_auth/
-.wwebjs_cache/
+auth_info_baileys
 
 # logs
 logs/

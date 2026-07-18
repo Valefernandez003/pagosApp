@@ -16,40 +16,36 @@ const processedMessages =
 const usersWithRecentReceipt =
     require("../storage/usersWithRecentReceipt");
 
-async function handleTextPayment(message) {
+function getTextBody(m) {
+    return (
+        m.message?.conversation ||
+        m.message?.extendedTextMessage?.text ||
+        ""
+    );
+}
 
-    if (!message.body?.trim()) {
-        return;
-    }
+async function handleTextPayment(m) {
 
-    if (
-        !isPaymentMessage(
-            message.body
-        )
-    ) {
 
-        return;
-    }
+    const body = getTextBody(m);
 
-    const contact =
-        await message.getContact();
+    const esPago = isPaymentMessage(body);
+    console.log("[TEXT] ¿isPaymentMessage?", esPago);
+
 
     const messageId =
-        message.id.id;
+        m.key.id;
 
     const nombre =
-        contact.name ||
-        contact.pushname ||
-        "Sin nombre";
+        m.pushName || "Sin nombre";
 
     const numero =
-        contact.id?.user ||
-        contact.number ||
-        message.from;
+        m.key.remoteJid;
 
     const numeroNormalizado =
         numero
             .replace("@c.us", "")
+            .replace("@s.whatsapp.net", "")
             .replace("@lid", "");
 
     if (
@@ -63,7 +59,7 @@ async function handleTextPayment(message) {
 
     let monto =
         normalizeAmount(
-            message.body
+            body
         );
 
     if (
@@ -108,7 +104,7 @@ async function handleTextPayment(message) {
 
     const fecha =
         formatDate(
-            message.timestamp
+            Number(m.messageTimestamp)
         );
 
     await savePayment({
@@ -116,22 +112,22 @@ async function handleTextPayment(message) {
         nombre,
         numero: numeroNormalizado,
         fecha,
-        mensaje: message.body,
+        mensaje: body,
         monto,
     });
-    
+
     usersWithRecentReceipt.set(
-            numeroNormalizado,
-            Date.now()
+        numeroNormalizado,
+        Date.now()
+    );
+
+    setTimeout(() => {
+
+        usersWithRecentReceipt.delete(
+            numeroNormalizado
         );
-    
-        setTimeout(() => {
-    
-            usersWithRecentReceipt.delete(
-                numeroNormalizado
-            );
-    
-        }, 1000 * 60 * 3);
+
+    }, 1000 * 60 * 3);
 }
 
 module.exports =

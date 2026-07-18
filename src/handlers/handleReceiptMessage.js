@@ -19,44 +19,52 @@ const processedMessages =
 const usersWithRecentReceipt =
     require("../storage/usersWithRecentReceipt");
 
-async function handleReceiptMessage(message) {
+const downloadIncomingMedia =
+    require("../utils/downloadIncomingMedia");
+
+function getCaption(m) {
+    return (
+        m.message?.imageMessage?.caption ||
+        m.message?.documentMessage?.caption ||
+        m.message?.documentWithCaptionMessage?.message?.documentMessage?.caption ||
+        ""
+    );
+}
+
+async function handleReceiptMessage(m, sock) {
 
     let media;
 
-console.log("======================================");
-console.log("[DOWNLOAD] Iniciando descarga");
-console.log("[DOWNLOAD] ID:", message.id.id);
-console.log("[DOWNLOAD] Tipo:", message.type);
-console.log("[DOWNLOAD] HasMedia:", message.hasMedia);
-console.log("[DOWNLOAD] From:", message.from);
+    console.log("======================================");
+    console.log("[DOWNLOAD] Iniciando descarga");
+    console.log("[DOWNLOAD] ID:", m.key.id);
+    console.log("[DOWNLOAD] From:", m.key.remoteJid);
 
-try {
-    
-    if (message.from === "status@broadcast") {
-    return;
-    }
-
-    media = await message.downloadMedia();
-
-    if (!media) {
-        console.log("[DOWNLOAD] downloadMedia devolvió null");
+    if (m.key.remoteJid === "status@broadcast") {
         return;
     }
 
-    console.log("[DOWNLOAD] Descarga exitosa");
-    console.log("[DOWNLOAD] MIME:", media.mimetype);
-    console.log("[DOWNLOAD] Filename:", media.filename);
+    try {
+        media = await downloadIncomingMedia(sock, m);
 
-} catch (err) {
+        if (!media) {
+            console.log("[DOWNLOAD] downloadIncomingMedia devolvió null");
+            return;
+        }
 
-    console.log("[DOWNLOAD] Error al descargar media");
-    console.log("Nombre:", err.name);
-    console.log("Mensaje:", err.message);
-    console.log("Stack:", err.stack);
-    console.log("Objeto completo:", err);
+        console.log("[DOWNLOAD] Descarga exitosa");
+        console.log("[DOWNLOAD] MIME:", media.mimetype);
+        console.log("[DOWNLOAD] Filename:", media.filename);
 
-    return;
-}
+    } catch (err) {
+
+        console.log("[DOWNLOAD] Error al descargar media");
+        console.log("Nombre:", err.name);
+        console.log("Mensaje:", err.message);
+        console.log("Stack:", err.stack);
+
+        return;
+    }
 
     const allowedTypes = [
         "image/jpeg",
@@ -104,7 +112,7 @@ try {
         ocrResult.text || "";
 
     const combinedText = `
-        ${message.body || ""}
+        ${getCaption(m)}
         ${media.filename || ""}
         ${extractedText}
     `.toLowerCase();
@@ -151,7 +159,7 @@ try {
 
     if (
         processedMessages.has(
-            message.id.id
+            m.key.id
         )
     ) {
 
@@ -159,60 +167,55 @@ try {
     }
 
     processedMessages.add(
-        message.id.id
+        m.key.id
     );
 
     setTimeout(() => {
 
         processedMessages.delete(
-            message.id.id
+            m.key.id
         );
 
     }, 1000 * 60 * 10);
 
-    const contact =
-        await message.getContact();
-
     const nombre =
-        contact.name ||
-        contact.pushname ||
-        "Sin nombre";
+        m.pushName || "Sin nombre";
 
     const numero =
-        contact.id?.user ||
-        contact.number ||
-        message.from;
+        m.key.remoteJid;
 
     const numeroNormalizado =
         numero
             .replace("@c.us", "")
+            .replace("@s.whatsapp.net", "")
             .replace("@lid", "");
 
     const fecha =
         formatDate(
-            message.timestamp
+            Number(m.messageTimestamp)
         );
-        if (usersWithRecentReceipt.has(numeroNormalizado)) {
-            return;
-        }
-        
+
+    if (usersWithRecentReceipt.has(numeroNormalizado)) {
+        return;
+    }
+
     usersWithRecentReceipt.set(
         numeroNormalizado,
         Date.now()
     );
 
-        console.log("[SHEETS] Guardando comprobante...");
+    console.log("[SHEETS] Guardando comprobante...");
 
-        await savePayment({
-            messageId: message.id.id,
-            nombre,
-            numero: numeroNormalizado,
-            fecha,
-            mensaje: "Comprobante de pago",
-            monto,
-        });
-        
-        console.log("[SHEETS] ✅ Comprobante guardado correctamente");
+    await savePayment({
+        messageId: m.key.id,
+        nombre,
+        numero: numeroNormalizado,
+        fecha,
+        mensaje: "Comprobante de pago",
+        monto,
+    });
+
+    console.log("[SHEETS] Comprobante guardado correctamente");
 
     setTimeout(() => {
 

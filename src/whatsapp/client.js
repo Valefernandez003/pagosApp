@@ -1,83 +1,84 @@
-const { Client, LocalAuth } =
-require("whatsapp-web.js");
+const {
+    default: makeWASocket,
+    useMultiFileAuthState,
+    DisconnectReason,
+    fetchLatestBaileysVersion,
+} = require("@whiskeysockets/baileys");
 
-const qrcode =
-require("qrcode-terminal");
+const qrcode = require("qrcode-terminal");
+const pino = require("pino");
 
-let isReady = false; // Variable de control
+const logger = pino({ level: "silent" });
 
-const client =
-new Client({
+const AUTH_FOLDER = "./auth_info_baileys";
 
-    authStrategy:
-        new LocalAuth(),
+let sock = null;
+let isReady = false;
 
-    puppeteer: {
+async function startClient() {
+    const { state, saveCreds } = await useMultiFileAuthState(AUTH_FOLDER);
+    const { version } = await fetchLatestBaileysVersion();
 
-        headless: true,
-
-        args: [
-
-            "--no-sandbox",
-
-            "--disable-setuid-sandbox",
-
-            "--disable-dev-shm-usage"
-        ]
-    }
-});
-
-client.on("qr", (qr) => {
-
-    console.log("ESCANEA QR");
-
-    qrcode.generate(qr, {
-        small: true
+    sock = makeWASocket({
+        version,
+        auth: state,
+        logger,
+        syncFullHistory: false,
+        markOnlineOnConnect: false,
     });
-});
 
-client.on("authenticated", () => {
+    sock.ev.on("creds.update", saveCreds);
 
-    console.log("AUTH OK");
-});
+    sock.ev.on("connection.update", (update) => {
+        const { connection, lastDisconnect, qr } = update;
 
-client.on("ready", async () => {
-    isReady = true;
-    console.log("WHATSAPP CONECTADO");
-});
-
-client.on("message_ack", () => {
-    console.log("MESSAGE_ACK");
-});
-
-client.on("change_state", state => {
-    console.log("STATE:", state);
-});
-
-client.on("disconnected", async (reason) => {
-
-    console.log("WHATSAPP DESCONECTADO: ", reason);
-    try {
-        await client.destroy(); // Cierre limpio antes de salir
-    } catch (e) {}
-    process.exit(1);
-});
-
-setTimeout(async () => {
-    if (!isReady) {
-        console.log("ALERTA: WhatsApp no llegó al estado READY en 5 minutos. Forzando cierre limpio...");
-        try {
-            //mata Chromium y libera los bloqueos de sesión
-            await client.destroy(); 
-            console.log("Puppeteer cerrado correctamente.");
-        } catch (error) {
-            console.error("Error al intentar cerrar el cliente en el watchdog:", error);
-        } finally {
-            console.log("Reiniciando proceso vía PM2...");
-            process.exit(1);
+        if (qr) {
+            console.log("ESCANEA QR");
+            qrcode.generate(qr, { small: true });
         }
+
+        if (connection === "open") {
+            isReady = true;
+            console.log("WHATSAPP CONECTADO");
+            console.log("Número:", sock.user?.id);
+        }
+
+        if (connection === "close") {
+            isReady = false;
+            const statusCode = lastDisconnect?.error?.output?.statusCode;
+            const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
+
+            console.log(
+                "WHATSAPP DESCONECTADO. Código:",
+                statusCode,
+                "¿Reintentar?",
+                shouldReconnect
+            );
+
+            if (shouldReconnect) {
+                startClient();
+            } else {
+                console.log("Sesión cerrada (logout). Hay que volver a escanear el QR.");
+            }
+        }
+    });
+
+    return sock;
+}
+
+function getSock() {
+    if (!sock) {
+        throw new Error("El cliente todavía no fue inicializado. Llamá a startClient() primero.");
     }
+    return sock;
+}
 
-}, 5 * 60 * 1000);
+function getIsReady() {
+    return isReady;
+}
 
-module.exports = client;
+module.exports = {
+    startClient,
+    getSock,
+    getIsReady,
+};
