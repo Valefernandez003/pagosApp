@@ -3,7 +3,7 @@ require("dotenv").config();
 const cron = require("node-cron");
 const { getContentType } = require("@whiskeysockets/baileys");
 
-const { startClient } = require("./whatsapp/client");
+const { startClient, getSock } = require("./whatsapp/client");
 
 const handleReceiptMessage =
     require("./handlers/handleReceiptMessage");
@@ -18,10 +18,8 @@ const MEDIA_TYPES = [
 ];
 
 async function main() {
-    const sock = await startClient();
+    async function onMessagesUpsert({ messages, type }) {
 
-    sock.ev.on("messages.upsert", async ({ messages, type }) => {
-        // Solo interesan mensajes nuevos en vivo
         if (type !== "notify") return;
 
         for (const m of messages) {
@@ -62,7 +60,7 @@ async function main() {
                         contentType
                     );
 
-                    await handleReceiptMessage(m, sock);
+                    await handleReceiptMessage(m, getSock());
 
                     continue;
                 }
@@ -77,7 +75,9 @@ async function main() {
                 );
             }
         }
-    });
+    }
+    
+    await startClient(onMessagesUpsert);
 
     cron.schedule("0 6 * * *", async () => {
         console.log("Iniciando reinicio diario programado...");

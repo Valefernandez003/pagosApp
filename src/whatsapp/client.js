@@ -15,7 +15,13 @@ const AUTH_FOLDER = "./auth_info_baileys";
 let sock = null;
 let isReady = false;
 
-async function startClient() {
+let messageHandler = null;
+
+async function startClient(onMessagesUpsert) {
+    if (onMessagesUpsert) {
+        messageHandler = onMessagesUpsert;
+    }
+
     const { state, saveCreds } = await useMultiFileAuthState(AUTH_FOLDER);
     const { version } = await fetchLatestBaileysVersion();
 
@@ -28,6 +34,10 @@ async function startClient() {
     });
 
     sock.ev.on("creds.update", saveCreds);
+
+    if (messageHandler) {
+        sock.ev.on("messages.upsert", messageHandler);
+    }
 
     sock.ev.on("connection.update", (update) => {
         const { connection, lastDisconnect, qr } = update;
