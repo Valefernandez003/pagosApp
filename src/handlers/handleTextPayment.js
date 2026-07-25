@@ -26,12 +26,25 @@ function getTextBody(m) {
 
 async function handleTextPayment(m) {
 
+    console.log("[TEXT] --- handleTextPayment llamado ---");
+    console.log("[TEXT] m.message crudo:", JSON.stringify(m.message));
 
     const body = getTextBody(m);
+
+    console.log("[TEXT] body extraído:", JSON.stringify(body));
+
+    if (!body.trim()) {
+        console.log("[TEXT] body vacío, se corta acá.");
+        return;
+    }
 
     const esPago = isPaymentMessage(body);
     console.log("[TEXT] ¿isPaymentMessage?", esPago);
 
+    if (!esPago) {
+        console.log("[TEXT] no pasó el filtro de isPaymentMessage, se corta acá.");
+        return;
+    }
 
     const messageId =
         m.key.id;
